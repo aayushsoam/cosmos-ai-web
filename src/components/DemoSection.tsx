@@ -5,6 +5,7 @@ import { Play } from "lucide-react";
 const DemoSection = () => {
   const [demoUrl, setDemoUrl] = useState("/video/Democratizing_AI_Automation.mp4");
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [thumbnailUrl] = useState("/placeholder.svg");
 
   // Convert YouTube URL to embed URL
   const getEmbedUrl = (url: string) => {
@@ -73,6 +74,13 @@ const DemoSection = () => {
                 className="absolute inset-0 flex items-center justify-center cursor-pointer group"
                 onClick={() => setIsVideoPlaying(true)}
               >
+                {/* Thumbnail Background */}
+                <img 
+                  src={thumbnailUrl} 
+                  alt="Video thumbnail" 
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                
                 {/* Placeholder */}
                 <div className="absolute inset-0 bg-gradient-to-br from-card to-muted/20" />
                 
