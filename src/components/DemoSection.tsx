@@ -4,7 +4,7 @@ import { Play } from "lucide-react";
 
 const DemoSection = () => {
   const [demoUrl, setDemoUrl] = useState("/video/Democratizing_AI_Automation.mp4");
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [thumbnailUrl] = useState("/placeholder.svg");
 
   // Convert YouTube URL to embed URL
