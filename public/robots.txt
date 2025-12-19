@@ -1,3 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /private/
+
+Sitemap: https://cosmos-ai.web/sitemap.xml
+
 User-agent: Googlebot
 Allow: /
 
