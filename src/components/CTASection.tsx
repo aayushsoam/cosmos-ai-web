@@ -1,49 +1,59 @@
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Chrome, Github, ArrowRight } from "lucide-react";
+import { Download, ArrowUpRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const CTASection = () => {
-  return (
-    <section className="py-24 md:py-32 relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 cosmic-glow opacity-40" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+  const [downloadUrl, setDownloadUrl] = useState("/downloads/cosmos-ai-extension.zip");
 
-      <div className="container relative z-10 mx-auto px-4 md:px-6 text-center">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="font-display text-4xl md:text-6xl font-bold mb-6">
-            Ready to Automate <span className="gradient-text">Smarter</span>?
+  useEffect(() => {
+    const fetchConfig = async () => {
+      const { data } = await supabase
+        .from("extension_config")
+        .select("value")
+        .eq("key", "download_url")
+        .maybeSingle();
+      
+      if (data?.value) {
+        setDownloadUrl(data.value);
+      }
+    };
+    fetchConfig();
+  }, []);
+
+  const handleDownload = () => {
+    window.open(downloadUrl, "_blank");
+  };
+
+  return (
+    <section className="py-32 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-foreground/3 rounded-full blur-[150px]" />
+      </div>
+
+      <div className="container relative z-10 mx-auto px-4 md:px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8">
+            Start Automating
+            <br />
+            <span className="text-muted-foreground">Today</span>
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground mb-10">
-            Join thousands of developers using Cosmos to automate their web workflows. 
-            Free forever, privacy-first, and open source.
+          
+          <p className="text-lg text-muted-foreground mb-12 max-w-xl mx-auto">
+            Join thousands using Cosmos to automate their web workflows. 
+            Free. Private. Powerful.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-            <Button variant="hero" size="xl" className="w-full sm:w-auto">
-              <Chrome className="w-5 h-5" />
-              Install for Chrome
-              <ArrowRight className="w-5 h-5" />
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button variant="hero" size="xl" onClick={handleDownload} className="w-full sm:w-auto group">
+              <Download className="w-5 h-5" />
+              Download Extension
+              <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Button>
             <Button variant="heroOutline" size="xl" className="w-full sm:w-auto">
-              <Github className="w-5 h-5" />
-              Star on GitHub
+              View on GitHub
             </Button>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 max-w-md mx-auto">
-            <div>
-              <div className="font-display text-3xl md:text-4xl font-bold gradient-text">5K+</div>
-              <div className="text-sm text-muted-foreground">Active Users</div>
-            </div>
-            <div>
-              <div className="font-display text-3xl md:text-4xl font-bold gradient-text">100%</div>
-              <div className="text-sm text-muted-foreground">Open Source</div>
-            </div>
-            <div>
-              <div className="font-display text-3xl md:text-4xl font-bold gradient-text">$0</div>
-              <div className="text-sm text-muted-foreground">Forever Free</div>
-            </div>
           </div>
         </div>
       </div>
