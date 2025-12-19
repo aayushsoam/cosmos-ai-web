@@ -3,23 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Play } from "lucide-react";
 
 const DemoSection = () => {
-  const [demoUrl, setDemoUrl] = useState("");
+  const [demoUrl, setDemoUrl] = useState("/video/Democratizing_AI_Automation.mp4");
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
-
-  useEffect(() => {
-    const fetchDemoUrl = async () => {
-      const { data } = await supabase
-        .from("extension_config")
-        .select("value")
-        .eq("key", "demo_video_url")
-        .maybeSingle();
-      
-      if (data?.value) {
-        setDemoUrl(data.value);
-      }
-    };
-    fetchDemoUrl();
-  }, []);
 
   // Convert YouTube URL to embed URL
   const getEmbedUrl = (url: string) => {
@@ -32,6 +17,10 @@ const DemoSection = () => {
       return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
     }
     return url;
+  };
+
+  const isYouTubeUrl = (url: string) => {
+    return url.includes("youtube.com") || url.includes("youtu.be");
   };
 
   return (
@@ -48,22 +37,41 @@ const DemoSection = () => {
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
             See how Cosmos AI automates complex web workflows with intelligent multi-agent collaboration.
           </p>
+          <a 
+            href=""
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-4 text-primary hover:text-primary/80 transition-colors underline"
+          >
+            .
+          </a>
         </div>
 
         {/* Video Container */}
         <div className="max-w-5xl mx-auto">
           <div className="relative aspect-video rounded-2xl overflow-hidden border border-border bg-card">
-            {demoUrl && isVideoPlaying ? (
-              <iframe
-                src={getEmbedUrl(demoUrl)}
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+            {isVideoPlaying ? (
+              isYouTubeUrl(demoUrl) ? (
+                <iframe
+                  src={getEmbedUrl(demoUrl)}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <video
+                  className="w-full h-full"
+                  controls
+                  autoPlay
+                >
+                  <source src={demoUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )
             ) : (
               <div 
                 className="absolute inset-0 flex items-center justify-center cursor-pointer group"
-                onClick={() => demoUrl && setIsVideoPlaying(true)}
+                onClick={() => setIsVideoPlaying(true)}
               >
                 {/* Placeholder */}
                 <div className="absolute inset-0 bg-gradient-to-br from-card to-muted/20" />
@@ -92,6 +100,14 @@ const DemoSection = () => {
               </div>
             )}
           </div>
+          <a 
+            href=""
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-4 text-center w-full text-primary hover:text-primary/80 transition-colors underline"
+          >
+            .
+          </a>
         </div>
       </div>
     </section>
