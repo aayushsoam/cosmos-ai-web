@@ -1,9 +1,7 @@
 import akkLogo from "@/assets/akk-logo.svg";
 import { Github, Twitter } from "lucide-react";
-
 const Footer = () => {
-  return (
-    <footer className="border-t border-border/50 py-12">
+  return <footer className="border-t border-border/50 py-12">
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Logo & Copyright */}
@@ -26,23 +24,11 @@ const Footer = () => {
 
           {/* Social */}
           <div className="flex items-center gap-4">
-            <a
-              href="#"
-              className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all duration-300"
-            >
-              <Github className="w-5 h-5" />
-            </a>
-            <a
-              href="#"
-              className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-all duration-300"
-            >
-              <Twitter className="w-5 h-5" />
-            </a>
+            
+            
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
