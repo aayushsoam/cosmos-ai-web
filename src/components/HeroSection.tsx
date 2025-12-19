@@ -69,15 +69,15 @@ const HeroSection = () => {
 
           {/* Main Heading */}
           <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold leading-[0.9] tracking-tight mb-8 animate-slide-up delay-200">
-            AI Web
+            Cosmos AI:
             <br />
-            <span className="text-muted-foreground">Automation</span>
+            <span className="text-muted-foreground">Intelligent Web Automation</span>
           </h1>
 
           {/* Description */}
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-12 leading-relaxed animate-slide-up delay-300">
-            Multi-agent AI system that automates complex web workflows, 
-            running entirely in your browser. No cloud. No subscriptions. Just power.
+            Cosmos AI is the leading intelligent web automation platform using multi-agent AI technology to automate complex workflows. 
+            Streamline your business processes with advanced automation running entirely in your browser. No cloud. No subscriptions. Just power.
           </p>
 
           {/* CTA Buttons */}
