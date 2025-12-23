@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Play } from "lucide-react";
 
@@ -26,8 +26,76 @@ const DemoSection = () => {
         setLoading(false);
       }
     };
-
     fetchVideoUrl();
+
+    // If demoUrl is a YouTube URL, initialize the IFrame API player to control quality
+    const initYouTubePlayer = () => {
+      const videoId = getYouTubeId(demoUrl);
+      if (!videoId) return;
+
+      const createPlayer = () => {
+        try {
+          // @ts-ignore
+          playerRef.current = new window.YT.Player('youtube-demo', {
+            height: '100%',
+            width: '100%',
+            videoId,
+            playerVars: {
+              autoplay: 1,
+              controls: 1,
+              rel: 0,
+              playsinline: 1,
+            },
+            events: {
+              onReady: (event: any) => {
+                try { event.target.setPlaybackQuality('hd1080'); } catch {}
+                try { event.target.playVideo(); } catch {}
+              },
+              onStateChange: (event: any) => {
+                // When playing, re-apply 1080p if it drops
+                // @ts-ignore
+                if (event.data === window.YT?.PlayerState?.PLAYING) {
+                  try { event.target.setPlaybackQuality('hd1080'); } catch {}
+                }
+              }
+            }
+          });
+        } catch (err) {
+          console.error('YouTube player init error', err);
+        }
+      };
+
+      if ((window as any).YT && (window as any).YT.Player) {
+        createPlayer();
+      } else if (!apiLoadedRef.current) {
+        apiLoadedRef.current = true;
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        if (firstScriptTag && firstScriptTag.parentNode) {
+          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        } else {
+          document.head.appendChild(tag);
+        }
+
+        // @ts-ignore assign global callback
+        (window as any).onYouTubeIframeAPIReady = () => {
+          createPlayer();
+        };
+      }
+    };
+
+    if (demoUrl && isYouTubeUrl(demoUrl)) {
+      initYouTubePlayer();
+    }
+
+    return () => {
+      try {
+        if (playerRef.current && playerRef.current.destroy) playerRef.current.destroy();
+      } catch {}
+      // cleanup global callback
+      try { (window as any).onYouTubeIframeAPIReady = undefined; } catch {}
+    };
   }, []);
 
   // Convert YouTube URL to embed URL
@@ -43,9 +111,20 @@ const DemoSection = () => {
     return url;
   };
 
+  // Extract plain YouTube video id
+  const getYouTubeId = (url: string) => {
+    if (!url) return null;
+    if (url.includes("youtube.com/watch")) return url.split("v=")[1]?.split("&")[0] || null;
+    if (url.includes("youtu.be/")) return url.split("youtu.be/")[1]?.split("?")[0] || null;
+    return null;
+  };
+
   const isYouTubeUrl = (url: string) => {
     return url.includes("youtube.com") || url.includes("youtu.be");
   };
+
+  const playerRef = useRef<any>(null);
+  const apiLoadedRef = useRef(false);
 
   return (
     <section id="demo" className="py-32 relative overflow-hidden">
@@ -83,12 +162,8 @@ const DemoSection = () => {
               </div>
             ) : isVideoPlaying ? (
               isYouTubeUrl(demoUrl) ? (
-                <iframe
-                  src={getEmbedUrl(demoUrl)}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                // Render a container for the YouTube IFrame API player so we can force 1080p
+                <div id="youtube-demo" className="w-full h-full" />
               ) : (
                 <video
                   className="w-full h-full"
