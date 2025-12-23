@@ -21,8 +21,25 @@ const CTASection = () => {
     fetchConfig();
   }, []);
 
-  const handleDownload = () => {
-    window.open(downloadUrl, "_blank");
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(downloadUrl);
+      if (!response.ok) throw new Error("Download failed");
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cosmos-ai-extension-2025-12-23.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download error:", error);
+      // Fallback to opening in new tab if direct download fails
+      window.open(downloadUrl, "_blank");
+    }
   };
 
   return (

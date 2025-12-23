@@ -6,6 +6,7 @@ import akkLogo from "@/assets/akk-logo.svg";
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState("/downloads/cosmos-ai-extension-2025-12-23.zip");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,6 +15,30 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(downloadUrl);
+      if (!response.ok) throw new Error("Download failed");
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "cosmos-ai-extension-2025-12-23.zip";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download error:", error);
+      window.open(downloadUrl, "_blank");
+    }
+  };
+
+  const handleGitHub = () => {
+    window.open("https://github.com/aayushsoam/cosmos-ai-web", "_blank");
+  };
 
   const navLinks = [
     { name: "Features", href: "#features" },
@@ -57,10 +82,10 @@ const Navbar = () => {
 
           {/* CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <Button variant="ghost" size="sm" className="text-muted-foreground">
+            <Button variant="ghost" size="sm" className="text-muted-foreground" onClick={handleGitHub}>
               GitHub
             </Button>
-            <Button variant="hero" size="sm">
+            <Button variant="hero" size="sm" onClick={handleDownload}>
               Download
             </Button>
           </div>
@@ -89,10 +114,10 @@ const Navbar = () => {
                 </a>
               ))}
               <div className="flex flex-col gap-3 pt-4 border-t border-border/50">
-                <Button variant="heroOutline" className="justify-center">
+                <Button variant="heroOutline" className="justify-center" onClick={handleGitHub}>
                   GitHub
                 </Button>
-                <Button variant="hero">
+                <Button variant="hero" onClick={handleDownload}>
                   Download Extension
                 </Button>
               </div>
