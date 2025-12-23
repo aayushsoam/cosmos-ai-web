@@ -27,76 +27,73 @@ const DemoSection = () => {
       }
     };
     fetchVideoUrl();
+  }, []);
 
-    // If demoUrl is a YouTube URL, initialize the IFrame API player to control quality
-    const initYouTubePlayer = () => {
-      const videoId = getYouTubeId(demoUrl);
-      if (!videoId) return;
+  // Initialize YouTube player after demoUrl changes (so the container div exists)
+  useEffect(() => {
+    if (!demoUrl || !isYouTubeUrl(demoUrl)) return;
 
-      const createPlayer = () => {
-        try {
-          // @ts-ignore
-          playerRef.current = new window.YT.Player('youtube-demo', {
-            height: '100%',
-            width: '100%',
-            videoId,
-            playerVars: {
-              autoplay: 1,
-              controls: 1,
-              rel: 0,
-              playsinline: 1,
+    const videoId = getYouTubeId(demoUrl);
+    if (!videoId) return;
+
+    const createPlayer = () => {
+      try {
+        // @ts-ignore
+        playerRef.current = new window.YT.Player('youtube-demo', {
+          height: '100%',
+          width: '100%',
+          videoId,
+          playerVars: {
+            autoplay: 1,
+            controls: 1,
+            rel: 0,
+            playsinline: 1,
+          },
+          events: {
+            onReady: (event: any) => {
+              try { event.target.setPlaybackQuality('hd1080'); } catch {}
+              try { event.target.playVideo(); } catch {}
             },
-            events: {
-              onReady: (event: any) => {
+            onStateChange: (event: any) => {
+              // When playing, re-apply 1080p if it drops
+              // @ts-ignore
+              if (event.data === window.YT?.PlayerState?.PLAYING) {
                 try { event.target.setPlaybackQuality('hd1080'); } catch {}
-                try { event.target.playVideo(); } catch {}
-              },
-              onStateChange: (event: any) => {
-                // When playing, re-apply 1080p if it drops
-                // @ts-ignore
-                if (event.data === window.YT?.PlayerState?.PLAYING) {
-                  try { event.target.setPlaybackQuality('hd1080'); } catch {}
-                }
               }
             }
-          });
-        } catch (err) {
-          console.error('YouTube player init error', err);
-        }
-      };
-
-      if ((window as any).YT && (window as any).YT.Player) {
-        createPlayer();
-      } else if (!apiLoadedRef.current) {
-        apiLoadedRef.current = true;
-        const tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        if (firstScriptTag && firstScriptTag.parentNode) {
-          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        } else {
-          document.head.appendChild(tag);
-        }
-
-        // @ts-ignore assign global callback
-        (window as any).onYouTubeIframeAPIReady = () => {
-          createPlayer();
-        };
+          }
+        });
+      } catch (err) {
+        console.error('YouTube player init error', err);
       }
     };
 
-    if (demoUrl && isYouTubeUrl(demoUrl)) {
-      initYouTubePlayer();
+    if ((window as any).YT && (window as any).YT.Player) {
+      createPlayer();
+    } else if (!apiLoadedRef.current) {
+      apiLoadedRef.current = true;
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      if (firstScriptTag && firstScriptTag.parentNode) {
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      } else {
+        document.head.appendChild(tag);
+      }
+
+      // @ts-ignore assign global callback
+      (window as any).onYouTubeIframeAPIReady = () => {
+        createPlayer();
+      };
     }
 
     return () => {
       try {
         if (playerRef.current && playerRef.current.destroy) playerRef.current.destroy();
       } catch {}
-      // cleanup global callback
       try { (window as any).onYouTubeIframeAPIReady = undefined; } catch {}
     };
-  }, []);
+  }, [demoUrl]);
 
   // Convert YouTube URL to embed URL
   const getEmbedUrl = (url: string) => {
