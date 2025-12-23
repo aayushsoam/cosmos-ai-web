@@ -3,9 +3,29 @@ import { supabase } from "@/integrations/supabase/client";
 import { Play } from "lucide-react";
 
 const DemoSection = () => {
-  const [demoUrl, setDemoUrl] = useState("/video/1223.mp4");
+  const [demoUrl, setDemoUrl] = useState<string>("");
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [thumbnailUrl] = useState("/placeholder.svg");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchVideoUrl = async () => {
+      try {
+        // Try to get from Supabase Storage
+        const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/videos/1223.mp4`;
+        
+        // Fallback to local video if Supabase fails
+        setDemoUrl(publicUrl);
+      } catch (error) {
+        console.error('Error fetching video URL:', error);
+        setDemoUrl("/video/1223.mp4");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVideoUrl();
+  }, []);
 
   // Convert YouTube URL to embed URL
   const getEmbedUrl = (url: string) => {
@@ -51,7 +71,14 @@ const DemoSection = () => {
         {/* Video Container */}
         <div className="max-w-5xl mx-auto">
           <div className="relative aspect-video rounded-2xl overflow-hidden border border-border bg-card">
-            {isVideoPlaying ? (
+            {loading ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Loading video...</p>
+                </div>
+              </div>
+            ) : isVideoPlaying ? (
               isYouTubeUrl(demoUrl) ? (
                 <iframe
                   src={getEmbedUrl(demoUrl)}
