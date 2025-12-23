@@ -11,11 +11,17 @@ const DemoSection = () => {
   useEffect(() => {
     const fetchVideoUrl = async () => {
       try {
-        // Try to get from Supabase Storage
-        const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/videos/1223.mp4`;
-        
-        // Fallback to local video if Supabase fails
-        setDemoUrl(publicUrl);
+        // Prefer an explicit demo URL from env, then Supabase, then the provided YouTube link
+        const envDemoUrl = import.meta.env.VITE_DEMO_VIDEO_URL as string | undefined;
+        if (envDemoUrl) {
+          setDemoUrl(envDemoUrl);
+        } else if (import.meta.env.VITE_SUPABASE_URL) {
+          const publicUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/videos/1223.mp4`;
+          setDemoUrl(publicUrl);
+        } else {
+          // Fallback to the YouTube video requested
+          setDemoUrl("https://youtu.be/wCqLe2R4WeY");
+        }
       } catch (error) {
         console.error('Error fetching video URL:', error);
         setDemoUrl("/video/1223.mp4");
