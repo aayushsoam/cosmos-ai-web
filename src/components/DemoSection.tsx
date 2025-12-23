@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Play } from "lucide-react";
 
 const DemoSection = () => {
-  const [demoUrl, setDemoUrl] = useState("/video/Democratizing_AI_Automation.mp4");
+  const [demoUrl, setDemoUrl] = useState("/video/1223.mp4");
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [thumbnailUrl] = useState("/placeholder.svg");
 
