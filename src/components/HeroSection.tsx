@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import akkLogo from "@/assets/akk-logo.svg";
 
 const HeroSection = () => {
-  const [downloadUrl, setDownloadUrl] = useState("/downloads/cosmos-ai-extension.zip");
+  const [downloadUrl, setDownloadUrl] = useState("/downloads/cosmos-ai-extension-2025-12-23.zip");
 
   useEffect(() => {
     const fetchConfig = async () => {

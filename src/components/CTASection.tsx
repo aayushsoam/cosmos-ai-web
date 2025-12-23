@@ -4,7 +4,7 @@ import { Download, ArrowUpRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const CTASection = () => {
-  const [downloadUrl, setDownloadUrl] = useState("/downloads/cosmos-ai-extension.zip");
+  const [downloadUrl, setDownloadUrl] = useState("/downloads/cosmos-ai-extension-2025-12-23.zip");
 
   useEffect(() => {
     const fetchConfig = async () => {
